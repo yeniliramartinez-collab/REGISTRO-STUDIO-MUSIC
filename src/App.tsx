@@ -6,6 +6,7 @@ import CatalogView from './components/CatalogView';
 import IngestionView from './components/IngestionView';
 import LegalView from './components/LegalView';
 import Toast from './components/Toast';
+import ArkheIntentBar from './components/ArkheIntentBar';
 import { Song, LegalData, ViewType } from './types';
 
 import MusicLibrary from './components/MusicLibrary';
@@ -138,6 +139,7 @@ export default function App() {
             <LegalView data={legalData} onUpdate={handleUpdateLegal} />
           )}
         </div>
+        <ArkheIntentBar />
       </main>
 
       {toast && (

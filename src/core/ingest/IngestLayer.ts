@@ -10,7 +10,7 @@ export interface IngestResult {
 export const IngestLayer = {
   async processFile(file: File): Promise<IngestResult> {
     // 1. Sandbox Analysis (Simulated)
-    // Check for "corruption" based on file size or type
+    // Check for "corruption" based on file headers
     const issues: string[] = [];
     let status: IngestResult['status'] = 'success';
 
@@ -22,23 +22,35 @@ export const IngestLayer = {
       };
     }
 
-    // Simulate corruption check
-    // For demo purposes, let's say files starting with "corrupt" in name are corrupted
-    if (file.name.toLowerCase().startsWith('corrupt')) {
+    // Read first 4 bytes for header check
+    const buffer = await file.slice(0, 4).arrayBuffer();
+    const header = new Uint8Array(buffer);
+    const headerHex = Array.from(header).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+
+    // Check for common audio headers (WAV: RIFF, MP3: ID3 or FFFB, FLAC: fLaC, OGG: OggS)
+    // Note: This is a simplified check. Real validation would be more robust.
+    const isWav = headerHex.startsWith('52494646'); // RIFF
+    const isMp3 = headerHex.startsWith('494433') || headerHex.startsWith('FFFB'); // ID3 or Frame Sync
+    const isFlac = headerHex.startsWith('664C6143'); // fLaC
+    const isOgg = headerHex.startsWith('4F676753'); // OggS
+    const isM4a = headerHex.startsWith('000000'); // ftyp (often starts with 00 00 00 ...)
+
+    // Simulate corruption if headers don't match known types OR if filename contains "corrupt" for testing
+    if ((!isWav && !isMp3 && !isFlac && !isOgg && !isM4a) || file.name.toLowerCase().includes('corrupt')) {
       status = 'corrupted';
-      issues.push('Header mismatch', 'Unexpected EOF');
+      issues.push('Invalid or unknown file header', `Header: ${headerHex}`);
       
-      // Attempt "repair"
+      // Attempt "repair" (simulated)
       // In a real system, this would try to fix headers or trim bad frames
-      const repairable = Math.random() > 0.5;
+      const repairable = Math.random() > 0.3; // 70% chance to repair
       if (repairable) {
         status = 'repaired';
-        issues.push('Header fixed automatically');
+        issues.push('Header reconstructed automatically');
       } else {
         return {
           status: 'corrupted',
           issues,
-          message: 'Archivo corrupto irreparable.'
+          message: 'Formato de archivo no reconocido o cabecera corrupta.'
         };
       }
     }

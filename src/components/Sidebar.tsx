@@ -16,14 +16,38 @@ export default function Sidebar({ currentView, onSwitchView }: SidebarProps) {
 
   return (
     <aside className="w-72 glass border-r border-slate-800 flex flex-col z-20 h-full">
-      <div className="p-8 border-b border-slate-800">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-emerald-500 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-            <Shield className="text-white w-6 h-6" />
+      <div className="p-6 border-b border-slate-800/50 bg-gradient-to-b from-slate-900/80 to-transparent">
+        <div className="flex flex-col items-center gap-4 mb-2 mt-4">
+          {/* Premium Golden Logo */}
+          <div className="relative flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-amber-200 via-yellow-500 to-amber-700 shadow-[0_0_40px_rgba(217,119,6,0.3)] p-[2px] group hover:scale-105 transition-transform duration-500">
+            <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 to-slate-900 rounded-2xl"></div>
+            <div className="relative z-10 flex items-center justify-center w-full h-full rounded-xl bg-gradient-to-b from-slate-900 to-black border border-yellow-500/30 overflow-hidden">
+               {/* Inner glow */}
+               <div className="absolute inset-0 bg-yellow-500/10 blur-xl rounded-full"></div>
+               {/* Logo Mark */}
+               <div className="relative flex flex-col items-center">
+                 <span className="text-5xl font-black bg-gradient-to-br from-yellow-100 via-amber-400 to-yellow-700 bg-clip-text text-transparent tracking-tighter drop-shadow-lg" style={{ fontFamily: 'Playfair Display, serif' }}>
+                   RS
+                 </span>
+                 <div className="w-8 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent mt-1"></div>
+               </div>
+            </div>
           </div>
-          <h1 className="font-black text-2xl tracking-tighter">ARKHÉ</h1>
+          
+          {/* Typography */}
+          <div className="text-center space-y-1">
+            <h1 className="font-black text-xl tracking-tight bg-gradient-to-r from-yellow-100 via-amber-400 to-yellow-600 bg-clip-text text-transparent drop-shadow-sm">
+              REGISTER STUDIO
+            </h1>
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-4 h-[1px] bg-amber-500/50"></div>
+              <h2 className="font-bold text-[10px] tracking-[0.3em] text-amber-500/90 uppercase">
+                Music Pro V 2.0
+              </h2>
+              <div className="w-4 h-[1px] bg-amber-500/50"></div>
+            </div>
+          </div>
         </div>
-        <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em] font-bold">Hybrid IP Factory v1.0</p>
       </div>
 
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
@@ -31,10 +55,10 @@ export default function Sidebar({ currentView, onSwitchView }: SidebarProps) {
           <button
             key={item.id}
             onClick={() => onSwitchView(item.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-semibold ${
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-sm font-semibold ${
               currentView === item.id
-                ? 'bg-emerald-600 text-white'
-                : 'text-slate-400 hover:bg-slate-800'
+                ? 'bg-gradient-to-r from-amber-500/20 to-yellow-600/10 text-amber-400 border border-amber-500/30 shadow-[inset_0_0_20px_rgba(217,119,6,0.1)]'
+                : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 border border-transparent'
             }`}
           >
             <item.icon className="w-5 h-5" />
@@ -46,8 +70,8 @@ export default function Sidebar({ currentView, onSwitchView }: SidebarProps) {
       <div className="p-6 border-t border-slate-800 space-y-4">
         <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span className="text-[10px] font-bold uppercase text-slate-400">Motor Offline Activo</span>
+            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.6)]"></div>
+            <span className="text-[10px] font-bold uppercase text-amber-500/80 tracking-wider">Motor Offline Activo</span>
           </div>
           <p className="text-[9px] text-slate-500 leading-tight italic">
             Tus datos nunca salen de este dispositivo. Generación local habilitada.

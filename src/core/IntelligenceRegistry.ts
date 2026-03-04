@@ -1,3 +1,5 @@
+import { Song, LegalPack, AssetPack } from '../types';
+
 export type LifecycleState =
   | "submitted"
   | "pending"
@@ -7,7 +9,7 @@ export type LifecycleState =
   | "deprecated"
   | "rejected";
 
-export interface IntelligenceEntity {
+export interface IntelligenceEntity extends Partial<Song> {
   id: string;
   type: "track";
   hash: string;
@@ -38,6 +40,17 @@ class IntelligenceRegistry {
           title: file.name,
           size: file.size,
           type: file.type
+      },
+      // God Level defaults
+      legal: {
+        certificateId: "",
+        timestamp: Date.now(),
+        sha256: hash,
+        aiDisclosure: { used: false, tools: [], elements: [], percentage: 0 },
+        shares: []
+      },
+      assets: {
+        lyrics: "PENDING ANALYSIS",
       }
     };
 

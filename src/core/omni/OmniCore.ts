@@ -5,7 +5,11 @@ export interface Intelligence {
   id: string;
   type: string;
   metadata: any;
-  legal?: any; // Added for Legal Pack
+  legal?: any;
+  certificate?: string;
+  aiDeclaration?: string;
+  distributionJson?: string;
+  contract?: string;
   state: 'sandbox' | 'active' | 'rejected';
   score: number;
   created: number;

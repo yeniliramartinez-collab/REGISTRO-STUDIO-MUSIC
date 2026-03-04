@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, ChangeEvent } from 'react';
 import { Plus, Package, Check, Music, FileAudio, AlertTriangle, ShieldCheck, Database, Activity } from 'lucide-react';
 import { Song } from '../types';
-import { intakeAudio, registry as intakeRegistry } from '../ingest/intakeRouter';
+import { registry as intakeRegistry } from '../core/IntelligenceRegistry';
 import { OMNI } from '../core/omni/OmniCore';
 
 import { eventBus } from "../core/EventBus";
@@ -23,6 +23,8 @@ export default function IngestionView({ onIngest }: IngestionViewProps) {
   const audioInputRef = useRef<HTMLInputElement>(null);
   const [registryCount, setRegistryCount] = useState(0);
   const [batchProgress, setBatchProgress] = useState("0 / 50");
+  const [aiUsed, setAiUsed] = useState(false);
+  const [authorName, setAuthorName] = useState("Visionary Founder");
 
   // Poll registry for updates (simple reactivity for demo)
   useEffect(() => {
@@ -68,7 +70,18 @@ export default function IngestionView({ onIngest }: IngestionViewProps) {
 
     try {
         // Trigger New Event-Based Ingestion Workflow
-        await eventBus.emit("track.ingested", { file: safeFile });
+        await eventBus.emit("track.ingested", { 
+            file: safeFile,
+            aiDisclosure: {
+                used: aiUsed,
+                tools: aiUsed ? ["ARKHÉ AI Engine"] : [],
+                elements: aiUsed ? ["lyrics", "melody"] : [],
+                percentage: aiUsed ? 50 : 0
+            },
+            shares: [
+                { name: authorName, role: "author", percentage: 100, identityId: "ARKHE-USER-001" }
+            ]
+        });
         
     } catch (e) {
         alert("Error en intake: " + (e as Error).message);
@@ -120,6 +133,32 @@ export default function IngestionView({ onIngest }: IngestionViewProps) {
             <p className="text-slate-400 text-sm max-w-md mx-auto">
               Aísla, valida, genera SHA-256, construye BMI Pack y puntúa la entidad.
             </p>
+          </div>
+
+          <div className="space-y-4 w-full max-w-md">
+            <div className="flex flex-col gap-2 text-left">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">Identidad del Autor</label>
+                <input 
+                    type="text" 
+                    value={authorName}
+                    onChange={(e) => setAuthorName(e.target.value)}
+                    className="bg-slate-950 border border-slate-800 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors"
+                    placeholder="Nombre del Autor"
+                />
+            </div>
+
+            <div className="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-lg px-4 py-3">
+                <div className="flex items-center gap-3">
+                    <Zap className={`w-4 h-4 ${aiUsed ? 'text-amber-400' : 'text-slate-600'}`} />
+                    <span className="text-sm font-medium text-slate-300">Declaración de Intervención IA</span>
+                </div>
+                <button 
+                    onClick={() => setAiUsed(!aiUsed)}
+                    className={`w-10 h-5 rounded-full relative transition-colors ${aiUsed ? 'bg-indigo-600' : 'bg-slate-800'}`}
+                >
+                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${aiUsed ? 'left-6' : 'left-1'}`} />
+                </button>
+            </div>
           </div>
 
           <div className="flex gap-4">
@@ -187,25 +226,57 @@ export default function IngestionView({ onIngest }: IngestionViewProps) {
                     </div>
                     
                     {lastEntity.contract && (
-                        <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50 col-span-full flex justify-between items-center">
-                             <div>
-                                <label className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Contrato Legal</label>
-                                <p className="text-xs text-indigo-300 font-mono">Generado automáticamente y vinculado al hash.</p>
+                        <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/50 col-span-full flex flex-col gap-4">
+                             <div className="flex justify-between items-center">
+                                <div>
+                                    <label className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Expediente Legal (God Level)</label>
+                                    <p className="text-xs text-indigo-300 font-mono">Certificado, Declaración IA y JSON de Distribución generados.</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button 
+                                        onClick={() => {
+                                            const blob = new Blob([lastEntity.certificate], { type: "text/plain" });
+                                            const url = URL.createObjectURL(blob);
+                                            const a = document.createElement("a");
+                                            a.href = url;
+                                            a.download = `Certificado_${lastEntity.hash.substring(0,8)}.txt`;
+                                            a.click();
+                                            URL.revokeObjectURL(url);
+                                        }}
+                                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-bold rounded-lg transition-colors border border-slate-700"
+                                    >
+                                        Certificado
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            const blob = new Blob([lastEntity.aiDeclaration], { type: "text/plain" });
+                                            const url = URL.createObjectURL(blob);
+                                            const a = document.createElement("a");
+                                            a.href = url;
+                                            a.download = `Declaracion_IA_${lastEntity.hash.substring(0,8)}.txt`;
+                                            a.click();
+                                            URL.revokeObjectURL(url);
+                                        }}
+                                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-bold rounded-lg transition-colors border border-slate-700"
+                                    >
+                                        Declaración IA
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            const blob = new Blob([lastEntity.distributionJson], { type: "application/json" });
+                                            const url = URL.createObjectURL(blob);
+                                            const a = document.createElement("a");
+                                            a.href = url;
+                                            a.download = `Distribucion_${lastEntity.hash.substring(0,8)}.json`;
+                                            a.click();
+                                            URL.revokeObjectURL(url);
+                                        }}
+                                        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold rounded-lg transition-colors"
+                                    >
+                                        JSON Distro
+                                    </button>
+                                </div>
                              </div>
-                             <button 
-                                onClick={() => {
-                                    const blob = new Blob([lastEntity.contract], { type: "text/plain" });
-                                    const url = URL.createObjectURL(blob);
-                                    const a = document.createElement("a");
-                                    a.href = url;
-                                    a.download = `Contrato_${lastEntity.hash.substring(0,8)}.txt`;
-                                    a.click();
-                                    URL.revokeObjectURL(url);
-                                }}
-                                className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition-colors"
-                             >
-                                Descargar Contrato
-                             </button>
                         </div>
                     )}
 

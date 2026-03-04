@@ -23,12 +23,12 @@ export default function Header({ currentView, authorName, onExport }: HeaderProp
       </div>
       <div className="flex items-center gap-4">
         <div className="flex flex-col text-right mr-4">
-          <span className="text-sm font-bold text-emerald-400">{authorName || "Propietario Independiente"}</span>
-          <span className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Estado: Blindado</span>
+          <span className="text-sm font-bold text-amber-400">{authorName || "Propietario Independiente"}</span>
+          <span className="text-[10px] text-amber-500/60 uppercase font-bold tracking-widest">Estado: Blindado</span>
         </div>
         <button
           onClick={onExport}
-          className="bg-white text-slate-900 px-6 py-3 rounded-xl font-black text-sm hover:bg-emerald-400 transition-all flex items-center gap-2 shadow-xl cursor-pointer"
+          className="bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 text-slate-900 px-6 py-3 rounded-xl font-black text-sm hover:scale-105 transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.3)] cursor-pointer border border-yellow-300/50"
         >
           <Download className="w-4 h-4" />
           EXPORTAR HÍBRIDO

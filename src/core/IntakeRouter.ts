@@ -3,70 +3,115 @@ import { registry } from "./IntelligenceRegistry";
 import { evaluateTrack } from "./ScoringEngine";
 import { generarContrato } from "../legal/contractEngine";
 import { OMNI } from "./omni/OmniCore";
+import { analyzeAudioDNA } from "./omni/AudioDNA";
+import { LegalFactory } from "./LegalFactory";
+import { AI_Disclosure, AuthorShare } from "../types";
 
-// Re-integrate existing logic
-import { generateSpectralHash, generateTimbreMap } from "./omni/AudioDNA";
-
-eventBus.on("track.ingested", async ({ file }: { file: File }) => {
+eventBus.on("track.ingested", async ({ 
+  file, 
+  aiDisclosure, 
+  shares 
+}: { 
+  file: File, 
+  aiDisclosure?: AI_Disclosure,
+  shares?: AuthorShare[]
+}) => {
   console.log("[IntakeRouter] Track ingested:", file.name);
   
-  // 1. Register (Hashing)
+  // 1. Register (Initial Hashing)
   const entity = await registry.register(file);
   registry.updateState(entity.id, "pending");
 
   // 2. Validate & Analyze
-  eventBus.emit("track.validated", { id: entity.id, file });
+  eventBus.emit("track.validated", { 
+    id: entity.id, 
+    file, 
+    aiDisclosure: aiDisclosure || { used: false, tools: [], elements: [], percentage: 0 },
+    shares: shares || [{ name: "Visionary Founder", role: "author", percentage: 100, identityId: "ARKHE-001" }]
+  });
 });
 
-eventBus.on("track.validated", async ({ id, file }: { id: string, file: File }) => {
+eventBus.on("track.validated", async ({ 
+  id, 
+  file,
+  aiDisclosure,
+  shares
+}: { 
+  id: string, 
+  file: File,
+  aiDisclosure: AI_Disclosure,
+  shares: AuthorShare[]
+}) => {
   console.log("[IntakeRouter] Track validated:", id);
   
   // 3. Scoring
   evaluateTrack(id);
   
-  // 4. Advanced Analysis (Spectral/Timbre) - Integrating previous work
+  // 4. Legal Factory Generation (God Level)
   try {
-      const spectralHash = await generateSpectralHash(file);
-      const timbreMap = await generateTimbreMap(file);
-      
-      // Update entity with advanced data
       const entity = registry.get(id);
       if (entity) {
-          (entity as any).spectralHash = spectralHash;
-          (entity as any).timbreMap = timbreMap;
-      }
-  } catch (e) {
-      console.warn("Advanced analysis failed, proceeding with basic", e);
-  }
+          // Generate SHA-256 (already done in register, but we use it for legal docs)
+          const hash = id;
 
-  // 5. Contract Generation (Legacy Integration)
-  try {
-      const entity = registry.get(id);
-      if (entity && entity.metadata) {
-           const contrato = generarContrato({
-              titulo: entity.metadata.title,
-              autor: "Visionary Founder", // Default for now
+          // Build Legal Pack
+          const legalPack = LegalFactory.buildLegalPack(hash, "Visionary Founder", aiDisclosure, shares);
+          
+          // Generate Documents
+          const certificate = LegalFactory.generateCertificate(entity.metadata as any, hash);
+          const aiDeclaration = LegalFactory.generateAIDeclaration(aiDisclosure, hash);
+          
+          // Update Entity
+          (entity as any).legal = legalPack;
+          (entity as any).certificate = certificate;
+          (entity as any).aiDeclaration = aiDeclaration;
+          
+          // Legacy Contract
+          const contrato = generarContrato({
+              titulo: entity.metadata?.title || file.name,
+              autor: shares[0].name,
               duracion: "0:00",
               genero: "Unknown"
           }, id);
           (entity as any).contract = contrato;
+      }
+  } catch (e) {
+      eventBus.emit("system.failure", { event: "legal.factory", error: e });
+  }
+
+  // 5. Advanced Analysis (Spectral/Timbre/IP)
+  try {
+      const { spectralHash, timbreMap, ipValidation } = await analyzeAudioDNA(file);
+      
+      const entity = registry.get(id);
+      if (entity) {
+          (entity as any).spectralHash = spectralHash;
+          (entity as any).timbreMap = timbreMap;
+          (entity as any).ipValidation = ipValidation;
           
+          // Generate Distribution JSON
+          (entity as any).distributionJson = LegalFactory.generateDistributionJSON(entity as any);
+
           // Sync with OMNI Core (Legacy)
           // @ts-ignore
           OMNI.registry[id] = { ...entity, state: 'active' };
       }
-  } catch (e) {
-      eventBus.emit("system.failure", { event: "contract.generation", error: e });
-  }
 
-  registry.updateState(id, "sandbox");
+      registry.updateState(id, "sandbox");
+
+  } catch (e) {
+      console.warn("Advanced analysis failed", e);
+      eventBus.emit("system.failure", { event: "analysis.dna", error: e });
+      registry.updateState(id, "rejected");
+  }
   
   // Notify UI
   const finalEntity = registry.get(id);
   eventBus.emit("intelligence.ready", finalEntity);
   
-  // Trigger Batch (Legacy)
-  eventBus.emit("track.processed", finalEntity);
+  if (finalEntity?.lifecycle_state === "sandbox") {
+      eventBus.emit("track.processed", finalEntity);
+  }
 });
 
 eventBus.on("system.failure", ({ event, error }) => {
