@@ -75,7 +75,7 @@ class OmniCore {
 
   notifyListeners() {
       this.listeners.forEach(l => l(this.registry));
-      StorageService.saveRegistry();
+      StorageService.saveRegistry(this.registry, this.emit.bind(this));
   }
   
   getRegistryCount() {

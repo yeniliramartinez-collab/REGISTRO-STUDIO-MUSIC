@@ -1,19 +1,17 @@
-import { OMNI } from './OmniCore';
-
 export const StorageService = {
-  saveRegistry() {
+  saveRegistry(registry: any, emit: (event: string, payload: any) => void) {
     if (typeof window === 'undefined') return;
     
     try {
       localStorage.setItem(
         "arkhe_registry",
-        JSON.stringify(OMNI.registry)
+        JSON.stringify(registry)
       );
-      OMNI.emit("registry.saved", true);
+      emit("registry.saved", true);
       console.log("[OMNI] Registry saved to local storage");
     } catch (e) {
       console.error("[OMNI] Failed to save registry", e);
-      OMNI.emit("registry.save_error", e);
+      emit("registry.save_error", e);
     }
   },
 

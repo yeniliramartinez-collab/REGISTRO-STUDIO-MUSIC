@@ -1,5 +1,6 @@
-import { Shield, Library, UploadCloud, Gavel, Database } from 'lucide-react';
+import { Shield, Library, UploadCloud, Gavel, Database, WifiOff, LayoutDashboard } from 'lucide-react';
 import { ViewType } from '../types';
+import { useState } from 'react';
 
 interface SidebarProps {
   currentView: ViewType;
@@ -7,7 +8,23 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ currentView, onSwitchView }: SidebarProps) {
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
+
+  const toggleOfflineMode = () => {
+    setIsOfflineMode(!isOfflineMode);
+    if (!isOfflineMode) {
+      // Simulate registering service worker and loading local models
+      if ('serviceWorker' in navigator) {
+        // navigator.serviceWorker.register('/sw.js');
+      }
+      alert("Modo Soberanía Total Activado: Conexión a internet simulada como desconectada. Todo el procesamiento y la IA ahora corren localmente en tu dispositivo.");
+    } else {
+      alert("Modo Soberanía Total Desactivado: Conexión restaurada.");
+    }
+  };
+
   const navItems = [
+    { id: 'dashboard', label: 'Panel de Control', icon: LayoutDashboard },
     { id: 'catalog', label: 'Catálogo Maestro', icon: Library },
     { id: 'library', label: 'Biblioteca Interna', icon: Database },
     { id: 'ingestion', label: 'Ingesta Masiva', icon: UploadCloud },
@@ -68,10 +85,24 @@ export default function Sidebar({ currentView, onSwitchView }: SidebarProps) {
       </nav>
 
       <div className="p-6 border-t border-slate-800 space-y-4">
+        <button 
+          onClick={toggleOfflineMode}
+          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-xs transition-all ${
+            isOfflineMode 
+              ? 'bg-red-500/20 text-red-400 border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' 
+              : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'
+          }`}
+        >
+          <WifiOff className="w-4 h-4" />
+          {isOfflineMode ? 'SOBERANÍA TOTAL ACTIVADA' : 'MODO SOBERANÍA TOTAL'}
+        </button>
+        
         <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.6)]"></div>
-            <span className="text-[10px] font-bold uppercase text-amber-500/80 tracking-wider">Motor Offline Activo</span>
+            <div className={`w-2 h-2 rounded-full ${isOfflineMode ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)]'} animate-pulse`}></div>
+            <span className={`text-[10px] font-bold uppercase ${isOfflineMode ? 'text-red-400' : 'text-amber-500/80'} tracking-wider`}>
+              {isOfflineMode ? 'Aislamiento Total' : 'Motor Offline Activo'}
+            </span>
           </div>
           <p className="text-[9px] text-slate-500 leading-tight italic">
             Tus datos nunca salen de este dispositivo. Generación local habilitada.

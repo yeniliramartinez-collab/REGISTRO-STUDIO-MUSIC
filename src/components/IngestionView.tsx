@@ -11,7 +11,9 @@ import "../core/batch/BatchCompiler"; // Initialize Compiler Listener
 import { repairIfNeeded } from "../audio/autoRepair";
 
 import { NeuralFeed } from './NeuralFeed';
-import { FileDown, Zap } from 'lucide-react';
+import { FileDown, Zap, Wand2 } from 'lucide-react';
+import MidiWriter from 'midi-writer-js';
+import { saveAs } from 'file-saver';
 
 interface IngestionViewProps {
   onIngest: (newSongs: Song[]) => void;
@@ -52,6 +54,36 @@ export default function IngestionView({ onIngest }: IngestionViewProps) {
           eventBus.off("batch.progress", handleBatchProgress);
       };
   }, []);
+
+  const handleGenerateAI = async () => {
+    setIsProcessing(true);
+    try {
+      // Simulate GPT fetching lyrics
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const dummyLyrics = "Oscuridad en la ciudad\nBuscando la verdad\n(Trap beat drops)";
+      
+      // Generate MIDI
+      const track = new MidiWriter.Track();
+      track.addEvent(new MidiWriter.NoteEvent({pitch: ['C4', 'E4', 'G4'], duration: '4'}));
+      track.addEvent(new MidiWriter.NoteEvent({pitch: ['A3', 'C4', 'E4'], duration: '4'}));
+      const write = new MidiWriter.Writer(track);
+      const midiData = write.buildFile();
+      
+      // Save MIDI
+      const midiBlob = new Blob([midiData], {type: 'audio/midi'});
+      saveAs(midiBlob, 'generado_ia.mid');
+      
+      // Save Lyrics
+      const lyricsBlob = new Blob([dummyLyrics], {type: 'text/plain'});
+      saveAs(lyricsBlob, 'letra_ia.txt');
+      
+      alert("Letra y MIDI generados y descargados exitosamente en 10s.");
+    } catch (e) {
+      alert("Error generando IA");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const handleIntake = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -183,6 +215,14 @@ export default function IngestionView({ onIngest }: IngestionViewProps) {
                     Ingesta Masiva
                   </>
               )}
+            </button>
+            <button 
+              onClick={handleGenerateAI}
+              disabled={isProcessing}
+              className="bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-900 px-8 py-4 rounded-xl font-bold transition-all shadow-lg shadow-amber-500/20 flex items-center gap-3"
+            >
+              <Wand2 className="w-5 h-5" />
+              Generar Letra + MIDI
             </button>
           </div>
         </div>

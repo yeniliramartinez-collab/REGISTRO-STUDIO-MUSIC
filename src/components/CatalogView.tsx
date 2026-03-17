@@ -1,8 +1,9 @@
-import { Music2, Trash2, Music, ShieldCheck, FileText, Activity, Lock } from 'lucide-react';
+import { Music2, Trash2, Music, ShieldCheck, FileText, Activity, Lock, PlayCircle } from 'lucide-react';
 import { Song } from '../types';
 import { OMNI } from "../core/omni/OmniCore";
 import { eventBus } from "../core/EventBus";
 import { useEffect, useState } from "react";
+import WaveSurferPlayer from './WaveSurferPlayer';
 
 interface CatalogViewProps {
   songs: Song[];
@@ -90,39 +91,43 @@ export default function CatalogView({ songs, onDelete }: CatalogViewProps) {
         ) : (
           <div className="divide-y divide-slate-800/50">
             {works.map((w) => (
-              <div key={w.id} className="p-4 hover:bg-slate-800/30 transition-colors group flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${w.state === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-800 text-slate-500'}`}>
-                        <Music2 className="w-5 h-5" />
-                    </div>
-                    <div>
-                        <h4 className="font-bold text-white text-sm">{w.metadata?.nombre || w.metadata?.title || "Sin Título"}</h4>
-                        <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
-                            <span>{w.metadata?.autor || w.metadata?.author || "Desconocido"}</span>
-                            <span>•</span>
-                            <span className="text-indigo-400">SHA: {w.hash?.substring(0, 8)}...</span>
-                            {w.spectralHash && (
-                                <>
-                                    <span>•</span>
-                                    <span className="text-purple-400">SPEC: {w.spectralHash?.substring(0, 8)}...</span>
-                                </>
-                            )}
-                        </div>
-                    </div>
+              <div key={w.id} className="p-4 hover:bg-slate-800/30 transition-colors group flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${w.state === 'active' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-800 text-slate-500'}`}>
+                          <Music2 className="w-5 h-5" />
+                      </div>
+                      <div>
+                          <h4 className="font-bold text-white text-sm">{w.metadata?.nombre || w.metadata?.title || "Sin Título"}</h4>
+                          <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
+                              <span>{w.metadata?.autor || w.metadata?.author || "Desconocido"}</span>
+                              <span>•</span>
+                              <span className="text-indigo-400">SHA: {w.hash?.substring(0, 8)}...</span>
+                              {w.spectralHash && (
+                                  <>
+                                      <span>•</span>
+                                      <span className="text-purple-400">SPEC: {w.spectralHash?.substring(0, 8)}...</span>
+                                  </>
+                              )}
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                      {w.contract && (
+                          <div className="flex items-center gap-1 text-[10px] uppercase font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">
+                              <FileText className="w-3 h-3" />
+                              <span>Contrato</span>
+                          </div>
+                      )}
+                      <div className="text-right">
+                          <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Score</p>
+                          <p className="font-mono text-white font-bold">{w.score || 0}</p>
+                      </div>
+                  </div>
                 </div>
-                
-                <div className="flex items-center gap-4">
-                    {w.contract && (
-                        <div className="flex items-center gap-1 text-[10px] uppercase font-bold text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">
-                            <FileText className="w-3 h-3" />
-                            <span>Contrato</span>
-                        </div>
-                    )}
-                    <div className="text-right">
-                        <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Score</p>
-                        <p className="font-mono text-white font-bold">{w.score || 0}</p>
-                    </div>
-                </div>
+                {/* Simulated Audio URL for demo purposes, in a real app this would be the actual object URL or decrypted blob URL */}
+                <WaveSurferPlayer url="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" />
               </div>
             ))}
           </div>

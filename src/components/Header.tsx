@@ -1,39 +1,74 @@
-import { Download } from 'lucide-react';
+import React from "react";
 
 interface HeaderProps {
-  currentView: 'catalog' | 'ingestion' | 'legal';
+  currentView: "catalogo" | "ingesta" | "legal";
   authorName: string;
-  onExport: () => void;
+  onChangeView: (view: "catalogo" | "ingesta" | "legal") => void;
 }
 
-export default function Header({ currentView, authorName, onExport }: HeaderProps) {
-  const titles = {
-    catalog: { t: "Catálogo Maestro", d: "Gestión de activos musicales de alta escala" },
-    ingestion: { t: "Ingesta Industrial", d: "Procesamiento de archivos TXT masivos" },
-    legal: { t: "Marco Jurídico", d: "Blindaje y declaración de intervención humana" }
+export default function Header({ currentView, authorName, onChangeView }: HeaderProps) {
+
+  const sections = {
+    catalogo: {
+      title: "Catálogo Maestro",
+      description: "Biblioteca de canciones registradas"
+    },
+    ingesta: {
+      title: "Ingesta Musical",
+      description: "Crear y registrar nueva obra"
+    },
+    legal: {
+      title: "Marco Jurídico",
+      description: "Certificados y documentación legal"
+    }
   };
 
-  const { t, d } = titles[currentView];
+  const { title, description } = sections[currentView] || { 
+    title: "Vista Desconocida", 
+    description: "Sección no encontrada" 
+  };
 
   return (
-    <header className="h-24 glass border-b border-slate-800 flex items-center justify-between px-10 z-10 shrink-0">
-      <div>
-        <h2 className="text-2xl font-black tracking-tight">{t}</h2>
-        <p className="text-slate-500 text-xs">{d}</p>
-      </div>
-      <div className="flex items-center gap-4">
-        <div className="flex flex-col text-right mr-4">
-          <span className="text-sm font-bold text-amber-400">{authorName || "Propietario Independiente"}</span>
-          <span className="text-[10px] text-amber-500/60 uppercase font-bold tracking-widest">Estado: Blindado</span>
+    <header style={{
+      width: "100%",
+      background: "#111",
+      color: "#fff",
+      padding: "20px",
+      borderBottom: "2px solid #333"
+    }}>
+
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center"
+      }}>
+
+        <div>
+          <h1 style={{ margin: 0 }}>REGISTER STUDIO MUSIC PRO</h1>
+          <p style={{ margin: 0, opacity: 0.7 }}>Autor: {authorName}</p>
         </div>
-        <button
-          onClick={onExport}
-          className="bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 text-slate-900 px-6 py-3 rounded-xl font-black text-sm hover:scale-105 transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.3)] cursor-pointer border border-yellow-300/50"
-        >
-          <Download className="w-4 h-4" />
-          EXPORTAR HÍBRIDO
-        </button>
+
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button onClick={() => onChangeView("catalogo")}>
+            Catálogo
+          </button>
+
+          <button onClick={() => onChangeView("ingesta")}>
+            Nueva Obra
+          </button>
+
+          <button onClick={() => onChangeView("legal")}>
+            Legal
+          </button>
+        </div>
+
       </div>
+
+      <div style={{ marginTop: "15px" }}>
+        <h2 style={{ margin: 0 }}>{title}</h2>
+        <p style={{ margin: 0, opacity: 0.7 }}>{description}</p>
+      </div>
+
     </header>
   );
 }
