@@ -9,10 +9,12 @@ import { AI_Disclosure, AuthorShare } from "../types";
 
 eventBus.on("track.ingested", async ({ 
   file, 
+  mastered,
   aiDisclosure, 
   shares 
 }: { 
   file: File, 
+  mastered?: boolean,
   aiDisclosure?: AI_Disclosure,
   shares?: AuthorShare[]
 }) => {
@@ -20,6 +22,9 @@ eventBus.on("track.ingested", async ({
   
   // 1. Register (Initial Hashing)
   const entity = await registry.register(file);
+  if (mastered) {
+    (entity as any).mastered = true;
+  }
   registry.updateState(entity.id, "pending");
 
   // 2. Validate & Analyze

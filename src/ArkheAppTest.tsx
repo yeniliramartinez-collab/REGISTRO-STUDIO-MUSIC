@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { hablar } from "./voice/ArkheVoice"
-import { analizarAudio } from "./audio/AudioAnalyzer"
+import { analizarAudio } from "./audio/basicAudioAnalyzer"
 
 export default function ArkheAppTest(){
  const [audio,setAudio] = useState<string | null>(null)

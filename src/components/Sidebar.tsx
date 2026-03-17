@@ -25,10 +25,11 @@ export default function Sidebar({ currentView, onSwitchView }: SidebarProps) {
 
   const navItems = [
     { id: 'dashboard', label: 'Panel de Control', icon: LayoutDashboard },
-    { id: 'catalog', label: 'Catálogo Maestro', icon: Library },
-    { id: 'library', label: 'Biblioteca Interna', icon: Database },
-    { id: 'ingestion', label: 'Ingesta Masiva', icon: UploadCloud },
+    { id: 'ingestion', label: 'Fábrica IP', icon: UploadCloud },
+    { id: 'catalog', label: 'Biblioteca Activos', icon: Library },
+    { id: 'library', label: 'Reproductor & Stems', icon: Database },
     { id: 'legal', label: 'Marco Jurídico', icon: Gavel },
+    { id: 'marketplace', label: 'IP Marketplace', icon: Shield },
   ] as const;
 
   return (

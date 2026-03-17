@@ -11,9 +11,7 @@ import "../core/batch/BatchCompiler"; // Initialize Compiler Listener
 import { repairIfNeeded } from "../audio/autoRepair";
 
 import { NeuralFeed } from './NeuralFeed';
-import { FileDown, Zap, Wand2 } from 'lucide-react';
-import MidiWriter from 'midi-writer-js';
-import { saveAs } from 'file-saver';
+import { FileDown, Zap } from 'lucide-react';
 
 interface IngestionViewProps {
   onIngest: (newSongs: Song[]) => void;
@@ -26,6 +24,7 @@ export default function IngestionView({ onIngest }: IngestionViewProps) {
   const [registryCount, setRegistryCount] = useState(0);
   const [batchProgress, setBatchProgress] = useState("0 / 50");
   const [aiUsed, setAiUsed] = useState(false);
+  const [applyMastering, setApplyMastering] = useState(true);
   const [authorName, setAuthorName] = useState("Visionary Founder");
 
   // Poll registry for updates (simple reactivity for demo)
@@ -55,55 +54,47 @@ export default function IngestionView({ onIngest }: IngestionViewProps) {
       };
   }, []);
 
-  const handleGenerateAI = async () => {
-    setIsProcessing(true);
-    try {
-      // Simulate GPT fetching lyrics
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const dummyLyrics = "Oscuridad en la ciudad\nBuscando la verdad\n(Trap beat drops)";
-      
-      // Generate MIDI
-      const track = new MidiWriter.Track();
-      track.addEvent(new MidiWriter.NoteEvent({pitch: ['C4', 'E4', 'G4'], duration: '4'}));
-      track.addEvent(new MidiWriter.NoteEvent({pitch: ['A3', 'C4', 'E4'], duration: '4'}));
-      const write = new MidiWriter.Writer(track);
-      const midiData = write.buildFile();
-      
-      // Save MIDI
-      const midiBlob = new Blob([midiData], {type: 'audio/midi'});
-      saveAs(midiBlob, 'generado_ia.mid');
-      
-      // Save Lyrics
-      const lyricsBlob = new Blob([dummyLyrics], {type: 'text/plain'});
-      saveAs(lyricsBlob, 'letra_ia.txt');
-      
-      alert("Letra y MIDI generados y descargados exitosamente en 10s.");
-    } catch (e) {
-      alert("Error generando IA");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
   const handleIntake = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // 1. Auto-Repair / Validation Check
-    const repairResult = await repairIfNeeded(file);
-    if (!repairResult.repaired || !repairResult.file) {
-        alert("Archivo corrupto o inválido detectado por AutoRepair.");
-        return;
-    }
-    const safeFile = repairResult.file;
 
     setIsProcessing(true);
     setLastEntity(null);
 
     try {
+        // 1. Auto-Repair / Validation Check
+        const repairResult = await repairIfNeeded(file);
+        if (!repairResult.repaired || !repairResult.file) {
+            alert("Archivo corrupto o inválido detectado por AutoRepair.");
+            setIsProcessing(false);
+            return;
+        }
+        let safeFile = repairResult.file;
+
+        // 2. Send to Backend
+        const formData = new FormData();
+        formData.append("file", safeFile);
+        formData.append("author", authorName);
+        formData.append("aiUsed", String(aiUsed));
+        formData.append("applyMastering", String(applyMastering));
+
+        const response = await fetch("/api/ingest", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || "Error en el servidor");
+        }
+
+        const backendResult = await response.json();
+        console.log("Backend ingest result:", backendResult);
+
         // Trigger New Event-Based Ingestion Workflow
         await eventBus.emit("track.ingested", { 
             file: safeFile,
+            mastered: applyMastering,
             aiDisclosure: {
                 used: aiUsed,
                 tools: aiUsed ? ["ARKHÉ AI Engine"] : [],
@@ -191,6 +182,19 @@ export default function IngestionView({ onIngest }: IngestionViewProps) {
                     <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${aiUsed ? 'left-6' : 'left-1'}`} />
                 </button>
             </div>
+
+            <div className="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-lg px-4 py-3">
+                <div className="flex items-center gap-3">
+                    <Activity className={`w-4 h-4 ${applyMastering ? 'text-emerald-400' : 'text-slate-600'}`} />
+                    <span className="text-sm font-medium text-slate-300">Auto-Mastering (Compresión & Limiting)</span>
+                </div>
+                <button 
+                    onClick={() => setApplyMastering(!applyMastering)}
+                    className={`w-10 h-5 rounded-full relative transition-colors ${applyMastering ? 'bg-emerald-600' : 'bg-slate-800'}`}
+                >
+                    <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${applyMastering ? 'left-6' : 'left-1'}`} />
+                </button>
+            </div>
           </div>
 
           <div className="flex gap-4">
@@ -215,14 +219,6 @@ export default function IngestionView({ onIngest }: IngestionViewProps) {
                     Ingesta Masiva
                   </>
               )}
-            </button>
-            <button 
-              onClick={handleGenerateAI}
-              disabled={isProcessing}
-              className="bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-slate-900 px-8 py-4 rounded-xl font-bold transition-all shadow-lg shadow-amber-500/20 flex items-center gap-3"
-            >
-              <Wand2 className="w-5 h-5" />
-              Generar Letra + MIDI
             </button>
           </div>
         </div>

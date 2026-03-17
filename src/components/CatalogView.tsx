@@ -47,14 +47,14 @@ export default function CatalogView({ songs, onDelete }: CatalogViewProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="glass p-6 rounded-2xl border-l-4 border-emerald-500 relative overflow-hidden">
           <div className="relative z-10">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Obras Activas (BMI Ready)</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Obras Activas (Listas para Licenciar)</p>
             <p className="text-3xl font-black text-white">{stats.active}</p>
           </div>
           <Activity className="absolute right-4 top-4 text-emerald-500/10 w-24 h-24" />
         </div>
         <div className="glass p-6 rounded-2xl border-l-4 border-blue-500 relative overflow-hidden">
           <div className="relative z-10">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Lote Colectivo</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Lote Colectivo INDAUTOR</p>
             <p className="text-3xl font-black text-blue-400">{Math.min(100, (stats.active / 50) * 100).toFixed(0)}%</p>
             <p className="text-xs text-blue-500/50 mt-1">{stats.active} / 50 para cierre</p>
           </div>
@@ -66,7 +66,7 @@ export default function CatalogView({ songs, onDelete }: CatalogViewProps) {
           <div className="relative z-10">
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Blindaje Legal</p>
             <p className="text-3xl font-black text-amber-400">OMNI KERNEL</p>
-            <p className="text-xs text-amber-500/50 mt-1">Contratos + Hashes + Timbre</p>
+            <p className="text-xs text-amber-500/50 mt-1">Hash + Timestamp + PDF</p>
           </div>
           <ShieldCheck className="absolute right-4 top-4 text-amber-500/10 w-24 h-24" />
         </div>
@@ -78,14 +78,14 @@ export default function CatalogView({ songs, onDelete }: CatalogViewProps) {
                 <Lock className="w-4 h-4 text-indigo-400" />
                 Registro Inmutable (Kernel)
             </h3>
-            <span className="text-xs font-mono text-slate-500">{works.length} ENTIDADES</span>
+            <span className="text-xs font-mono text-slate-500">{works.length} ACTIVOS</span>
         </div>
         
         {works.length === 0 ? (
           <div className="p-20 text-center space-y-4">
             <div className="flex flex-col items-center gap-4">
               <Music className="w-12 h-12 text-slate-700" />
-              <p className="text-slate-500 italic">El núcleo está vacío. Inicia la ingesta masiva.</p>
+              <p className="text-slate-500 italic">La biblioteca está vacía. Inicia la Fábrica IP.</p>
             </div>
           </div>
         ) : (

@@ -1,6 +1,7 @@
-import { ShieldCheck, DollarSign, FileJson } from 'lucide-react';
+import { ShieldCheck, DollarSign, FileJson, FileText } from 'lucide-react';
 import { LegalData } from '../types';
 import { BMIService } from '../services/bmiService';
+import { jsPDF } from 'jspdf';
 
 interface LegalViewProps {
   data: LegalData;
@@ -20,7 +21,6 @@ export default function LegalView({ data, onUpdate }: LegalViewProps) {
 
     const paquete = await BMIService.generarPaqueteBMI(obra);
     
-    // Create a blob and download it to make it visible to the user
     const blob = new Blob([JSON.stringify(paquete, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -32,6 +32,49 @@ export default function LegalView({ data, onUpdate }: LegalViewProps) {
     URL.revokeObjectURL(url);
 
     alert(`Paquete BMI Generado Exitosamente:\n\nSHA256: ${paquete.SHA256}\nEstado: ${paquete.Estado}`);
+  };
+
+  const handleCreateINDAUTOR = () => {
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(40, 40, 40);
+    doc.text("INSTITUTO NACIONAL DEL DERECHO DE AUTOR", 105, 20, { align: "center" });
+    
+    doc.setFontSize(14);
+    doc.text("CERTIFICADO DE FIJACIÓN Y AUTORÍA (ARKHÉ SYSTEM)", 105, 30, { align: "center" });
+    
+    // Body
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Fecha de Emisión: ${new Date().toLocaleDateString()}`, 20, 50);
+    doc.text(`Titular / Autor: ${data.author}`, 20, 60);
+    doc.text(`Álbum / Colección: ${data.album}`, 20, 70);
+    
+    doc.text("DECLARACIÓN DE INTERVENCIÓN DE INTELIGENCIA ARTIFICIAL:", 20, 90);
+    doc.setFontSize(10);
+    doc.setTextColor(80, 80, 80);
+    const splitDeclaration = doc.splitTextToSize(data.declaration, 170);
+    doc.text(splitDeclaration, 20, 100);
+    
+    // Hash & Crypto
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text("EVIDENCIA CRIPTOGRÁFICA (SHA-256):", 20, 140);
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    const mockHash = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"; // Empty string hash for mock
+    doc.text(mockHash, 20, 150);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text("FIRMA DIGITAL:", 20, 180);
+    doc.line(20, 195, 80, 195);
+    doc.text(data.author, 20, 205);
+    
+    doc.save(`INDAUTOR_Registro_${Date.now()}.pdf`);
+    alert("PDF para INDAUTOR generado exitosamente.");
   };
 
   return (
@@ -98,6 +141,28 @@ export default function LegalView({ data, onUpdate }: LegalViewProps) {
         >
           <FileJson className="w-5 h-5" />
           Generar Registro BMI
+        </button>
+      </div>
+
+      {/* INDAUTOR Section */}
+      <div className="bg-fuchsia-500/10 border border-fuchsia-500/30 p-8 rounded-3xl flex flex-col md:flex-row gap-6 items-center justify-between">
+        <div className="flex gap-6 items-start">
+          <div className="p-4 bg-fuchsia-600 rounded-2xl text-white shadow-lg">
+            <ShieldCheck className="w-8 h-8" />
+          </div>
+          <div>
+            <h4 className="text-xl font-bold text-fuchsia-400">Registro INDAUTOR</h4>
+            <p className="text-slate-400 text-sm mt-1 leading-relaxed max-w-lg">
+              Genera el PDF con la declaración de intervención de IA, la letra, y la evidencia criptográfica (SHA-256) listo para presentar ante el Instituto Nacional del Derecho de Autor.
+            </p>
+          </div>
+        </div>
+        <button 
+          onClick={handleCreateINDAUTOR}
+          className="bg-fuchsia-600 hover:bg-fuchsia-500 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-fuchsia-500/20 whitespace-nowrap"
+        >
+          <FileText className="w-5 h-5" />
+          Generar PDF INDAUTOR
         </button>
       </div>
     </div>

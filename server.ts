@@ -5,6 +5,7 @@ import { ingest } from "./src/mastra/ingest/index.js";
 import { TrackPackageGenerator } from "./src/mastra/music/trackPackageGenerator.js";
 import { IntegrityScanner } from "./src/mastra/music/integrityScanner.js";
 import { SelfHealingEngine } from "./src/mastra/music/selfHealingEngine.js";
+import { autoMaster } from "./src/mastra/audio/autoMaster.js";
 import { File } from "buffer"; // Ensure File is available
 
 async function startServer() {
@@ -34,7 +35,7 @@ async function startServer() {
         return res.status(400).json({ error: "No file uploaded" });
       }
 
-      const { title, author, lyrics, performer, aiUsed } = req.body;
+      const { title, author, lyrics, performer, aiUsed, applyMastering } = req.body;
       
       // 1. Basic Validation (File Shielding)
       if (req.file.size < 1000) { // < 1KB
@@ -42,14 +43,29 @@ async function startServer() {
       }
       // In a real app we'd check sample rate here using a library like 'music-metadata'
 
+      let finalBuffer = req.file.buffer;
+      let finalMimeType = req.file.mimetype;
+      let finalName = req.file.originalname;
+
+      const shouldMaster = applyMastering === undefined ? true : String(applyMastering) === 'true';
+
+      // Apply Auto-Mastering if requested (or by default)
+      if (shouldMaster) {
+        console.log(`🎛️ Applying Auto-Mastering to ${finalName}...`);
+        finalBuffer = await autoMaster(finalBuffer, finalName);
+        finalMimeType = 'audio/wav';
+        finalName = finalName.replace(/\.[^/.]+$/, "") + "_mastered.wav";
+        console.log(`✅ Auto-Mastering complete.`);
+      }
+
       // 2. Basic Ingest (Registry)
-      const file = new File([req.file.buffer], req.file.originalname, {
-        type: req.file.mimetype,
+      const file = new File([finalBuffer], finalName, {
+        type: finalMimeType,
       });
       const result = await ingest(file, title || "Untitled", author || "Unknown");
 
       // 3. Advanced Track Packaging
-      await TrackPackageGenerator.createPackage(req.file.buffer, {
+      await TrackPackageGenerator.createPackage(finalBuffer, {
         title: title || "Untitled",
         author: author || "Unknown",
         performer: performer || "Unknown",

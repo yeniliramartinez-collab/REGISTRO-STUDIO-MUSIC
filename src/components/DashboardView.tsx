@@ -30,12 +30,11 @@ export default function DashboardView({ onNavigate }: DashboardViewProps) {
     : { text: "SYS.OK: KERNEL_ACTIVE // SHIELDS_UP", color: "text-cyan-400", border: "border-cyan-400", glow: "shadow-[0_0_15px_rgba(34,211,238,0.6)]", icon: CheckCircle2 };
 
   const cards = [
-    { id: 'library', title: 'VAULT_CORE', desc: 'Almacenamiento soberano encriptado. Stems y hashes.', icon: Database, view: 'library' as ViewType, color: 'cyan' },
-    { id: 'pending', title: 'QUEUE_SYNC', desc: `${stats.pending}/50 en buffer. Lote listo para INDAUTOR.`, icon: Activity, view: 'ingestion' as ViewType, color: 'fuchsia' },
-    { id: 'repair', title: 'AUTO_REPAIR', desc: 'Motor dual offline. Masterización y corrección.', icon: Cpu, view: 'ingestion' as ViewType, color: 'cyan' },
-    { id: 'registered', title: 'SECURE_ASSETS', desc: `${stats.active} entidades blindadas. Listas para monetizar.`, icon: Shield, view: 'catalog' as ViewType, color: 'fuchsia' },
-    { id: 'legal', title: 'LEGAL_PACK', desc: 'Generación automática de PDF + HTML + ISRC.', icon: Fingerprint, view: 'legal' as ViewType, color: 'cyan' },
-    { id: 'marketplace', title: 'IP_MARKET', desc: 'Contratos inteligentes. Porcentajes soberanos.', icon: Crosshair, view: 'marketplace' as ViewType, color: 'fuchsia' },
+    { id: 'pending', title: 'FÁBRICA IP', desc: `Pipeline de creación, fijación legal y empaquetado.`, icon: Activity, view: 'ingestion' as ViewType, color: 'fuchsia' },
+    { id: 'registered', title: 'BIBLIOTECA ACTIVOS', desc: `${stats.active} entidades blindadas. Listas para monetizar.`, icon: Shield, view: 'catalog' as ViewType, color: 'cyan' },
+    { id: 'library', title: 'REPRODUCTOR & STEMS', desc: 'Almacenamiento soberano. Separación de stems.', icon: Database, view: 'library' as ViewType, color: 'fuchsia' },
+    { id: 'legal', title: 'MARCO JURÍDICO', desc: 'Generación automática de PDF + JSON + ISRC.', icon: Fingerprint, view: 'legal' as ViewType, color: 'cyan' },
+    { id: 'marketplace', title: 'IP MARKETPLACE', desc: 'Ofrece canciones a artistas. Venta y licencias.', icon: Crosshair, view: 'marketplace' as ViewType, color: 'fuchsia' },
   ];
 
   return (

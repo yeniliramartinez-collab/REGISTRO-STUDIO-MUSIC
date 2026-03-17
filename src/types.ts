@@ -58,4 +58,4 @@ export interface LegalData {
   declaration: string;
 }
 
-export type ViewType = 'dashboard' | 'catalog' | 'ingestion' | 'legal' | 'library' | 'marketplace';
+export type ViewType = 'catalog' | 'ingestion' | 'legal' | 'library' | 'marketplace';

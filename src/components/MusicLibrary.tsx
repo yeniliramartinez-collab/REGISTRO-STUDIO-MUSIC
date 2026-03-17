@@ -132,8 +132,8 @@ export default function MusicLibrary() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-            <h2 className="text-3xl font-bold tracking-tight text-white mb-2">Biblioteca Maestra</h2>
-            <p className="text-slate-400">Gestión de activos, integridad y metadatos profesionales.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-white mb-2">Reproductor & Stems</h2>
+            <p className="text-slate-400">Almacenamiento soberano, reproducción y separación de stems para remezclas.</p>
         </div>
         <div className="flex gap-3">
             <div className="flex items-center gap-2 bg-slate-900/50 px-4 py-2 rounded-lg border border-slate-800">
