@@ -1,6 +1,8 @@
 import React,{useState} from "react"
 import {ArkheController} from "../system/ArkheController"
 import {buildMetadata} from "../distribution/MetadataEngine"
+import AutomaticEvolutionSystem from "./AutomaticEvolutionSystem"
+import { AssetPerformance } from "../types"
 
 const system = new ArkheController()
 
@@ -8,6 +10,31 @@ export default function ArkheStudio(){
   const [analysis,setAnalysis] = useState<any>(null)
   const [songTitle, setSongTitle] = useState("")
   const [metadata, setMetadata] = useState<any>(null)
+  
+  // Mock performance data for demonstration
+  const [performance, setPerformance] = useState<AssetPerformance>({
+    conversionScore: 4.2,
+    engagement: 68,
+    clicks: 1240,
+    impressions: 115000,
+    ctr: 1.07, // Below 1.2%
+    daysActive: 15, // After 14 days
+    status: 'needs_redesign'
+  })
+
+  const handleTriggerRedesign = () => {
+    // Simulate redesign process
+    setTimeout(() => {
+      setPerformance(prev => ({
+        ...prev,
+        ctr: 2.5,
+        clicks: prev.clicks + 500,
+        impressions: prev.impressions + 20000,
+        daysActive: 0,
+        status: 'optimal'
+      }))
+    }, 3000)
+  }
 
   async function upload(e:any){
     const file = e.target.files[0]
@@ -95,6 +122,12 @@ export default function ArkheStudio(){
           </div>
         </div>
       )}
+
+      {/* Automatic Evolution System */}
+      <AutomaticEvolutionSystem 
+        performance={performance} 
+        onTriggerRedesign={handleTriggerRedesign} 
+      />
 
       <div className="flex gap-4">
         <button 

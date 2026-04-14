@@ -24,12 +24,24 @@ export interface LegalPack {
   impiId?: string;
 }
 
+export interface AssetPerformance {
+  conversionScore: number;
+  engagement: number;
+  clicks: number;
+  impressions: number;
+  ctr: number; // Click-through rate
+  daysActive: number;
+  lastRedesignDate?: number;
+  status: 'optimal' | 'needs_redesign' | 'redesigning';
+}
+
 export interface AssetPack {
   lyrics: string;
   midiUrl?: string;
   wavUrl?: string;
   pdfUrl?: string;
   jsonUrl?: string;
+  performance?: AssetPerformance;
 }
 
 export interface Song {
