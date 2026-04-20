@@ -70,4 +70,28 @@ export interface LegalData {
   declaration: string;
 }
 
-export type ViewType = 'catalog' | 'ingestion' | 'legal' | 'library' | 'marketplace';
+export interface NarrativeAngle {
+  date: string;
+  angle: string;
+  description: string;
+  keywords: string[];
+}
+
+export type SocialPlatform = 'TikTok' | 'Instagram' | 'Pinterest' | 'YouTube';
+
+export interface VaultAsset {
+  id: string;
+  songId: string;
+  title: string;
+  type: 'video' | 'image' | 'audio_snippet' | 'text';
+  contentUrl: string;
+  narrativeAngle: string; // The angle it was generated for
+  priorityScore: number;
+  status: 'vaulted' | 'scheduled' | 'published';
+  scheduledFor?: {
+    platform: SocialPlatform;
+    time: number; // timestamp
+  }[];
+}
+
+export type ViewType = 'catalog' | 'ingestion' | 'legal' | 'library' | 'marketplace' | 'vault';

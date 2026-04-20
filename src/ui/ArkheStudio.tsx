@@ -57,7 +57,7 @@ export default function ArkheStudio(){
   }
 
   return(
-    <div className="p-8 max-w-2xl mx-auto font-sans">
+    <div className="font-sans">
       <h1 className="text-3xl font-bold mb-8 tracking-tight">ARKHE REGISTER STUDIO</h1>
 
       <div className="mb-8 space-y-4">

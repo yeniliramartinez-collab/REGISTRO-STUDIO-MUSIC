@@ -15,10 +15,18 @@ export class ArkheController{
   }
 
   master(){
-    masterBasico(this.engine.buffer!.getChannelData(0))
+    if (!this.engine.buffer) {
+      console.warn("No audio loaded to master");
+      return;
+    }
+    masterBasico(this.engine.buffer.getChannelData(0))
   }
 
   play(){
+    if (!this.engine.buffer) {
+      console.warn("No audio loaded to play");
+      return;
+    }
     this.engine.play()
   }
 }
