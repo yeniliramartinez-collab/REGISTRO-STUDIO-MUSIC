@@ -1,8 +1,9 @@
-import React,{useState} from "react"
+import React, { useState, useEffect, useRef } from "react"
 import {ArkheController} from "../system/ArkheController"
 import {buildMetadata} from "../distribution/MetadataEngine"
 import AutomaticEvolutionSystem from "./AutomaticEvolutionSystem"
 import { AssetPerformance } from "../types"
+import WaveSurfer from "wavesurfer.js"
 
 const system = new ArkheController()
 
@@ -10,6 +11,17 @@ export default function ArkheStudio(){
   const [analysis,setAnalysis] = useState<any>(null)
   const [songTitle, setSongTitle] = useState("")
   const [metadata, setMetadata] = useState<any>(null)
+  
+  const waveformRef = useRef<HTMLDivElement>(null);
+  const wavesurfer = useRef<WaveSurfer | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (wavesurfer.current) {
+        wavesurfer.current.destroy();
+      }
+    };
+  }, []);
   
   // Mock performance data for demonstration
   const [performance, setPerformance] = useState<AssetPerformance>({
@@ -38,12 +50,40 @@ export default function ArkheStudio(){
 
   async function upload(e:any){
     const file = e.target.files[0]
-    const result = await system.load(file)
-    setAnalysis(result)
+    if (!file) return;
+
+    try {
+      const result = await system.load(file)
+      setAnalysis(result)
+
+      const url = URL.createObjectURL(file);
+      if (waveformRef.current) {
+        if (wavesurfer.current) {
+          wavesurfer.current.destroy();
+        }
+        
+        wavesurfer.current = WaveSurfer.create({
+          container: waveformRef.current,
+          waveColor: "#5a2cff",
+          progressColor: "#00ffa6",
+          cursorColor: "#ffffff",
+          barWidth: 2,
+          height: 120,
+        });
+        
+        wavesurfer.current.load(url);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   function play(){
-    system.play()
+    if (wavesurfer.current) {
+      wavesurfer.current.playPause();
+    } else {
+      system.play()
+    }
   }
 
   function master(){
@@ -101,6 +141,15 @@ export default function ArkheStudio(){
           onChange={upload}
           className="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-zinc-100 file:text-zinc-900 hover:file:bg-zinc-200 transition-colors cursor-pointer"
         />
+        
+        {/* Audio Visualizer */}
+        <div 
+          id="waveform" 
+          ref={waveformRef} 
+          className="mt-6 bg-zinc-900 rounded-2xl p-4 w-full h-36 flex items-center justify-center overflow-hidden"
+        >
+          {!analysis && <span className="text-zinc-500 text-sm font-medium">Upload audio to visualize</span>}
+        </div>
       </div>
 
       {analysis && (
