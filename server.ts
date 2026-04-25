@@ -30,6 +30,25 @@ async function startServer() {
   }
   */
 
+  app.post("/api/master", upload.single("file"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      console.log(`🎛️ Applying Auto-Mastering to ${req.file.originalname}...`);
+      const finalBuffer = await autoMaster(req.file.buffer, req.file.originalname);
+      const finalName = req.file.originalname.replace(/\.[^/.]+$/, "") + "_mastered.wav";
+      
+      res.setHeader('Content-Type', 'audio/wav');
+      res.setHeader('Content-Disposition', `attachment; filename="${finalName}"`);
+      res.send(finalBuffer);
+    } catch (error: any) {
+      console.error("Master error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // API Routes
   app.post("/api/ingest", upload.single("file"), async (req, res) => {
     try {

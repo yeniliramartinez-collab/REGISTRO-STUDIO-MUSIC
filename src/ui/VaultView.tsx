@@ -54,106 +54,109 @@ export default function VaultView() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 font-sans">
       {/* Strategist Section */}
-      <div className="bg-zinc-900 text-white p-6 rounded-2xl border border-zinc-800">
+      <div className="bg-[#0a0a0c] text-[#c0c0c0] p-6 rounded-2xl border border-[#2B0011] shadow-[0_0_30px_rgba(75,0,33,0.3)]">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h2 className="text-xl font-bold flex items-center gap-2">
-              🧠 GPT Strategist
-              <span className="text-xs bg-zinc-800 text-zinc-300 px-2 py-1 rounded-full font-mono">Cannibalization Control</span>
+            <h2 className="text-2xl font-black flex items-center gap-2 text-[#d4af37] uppercase tracking-wider">
+              🧠 OMNI Strategist
+              <span className="text-xs bg-[#4b0021] text-[#00ffa6] px-2 py-1 rounded border border-[#00ffa6]/30 font-mono drop-shadow-[0_0_5px_rgba(0,255,166,0.3)]">Cannibalization Shield Active</span>
             </h2>
-            <p className="text-zinc-400 text-sm mt-1">Defines the daily narrative to ensure unified identity across all generated assets.</p>
+            <p className="text-zinc-500 text-sm mt-1">Defines the daily narrative to ensure unified identity across all generated assets. AI predictions prevent canonical violations.</p>
           </div>
           <button 
             onClick={handleGenerateAngle}
             disabled={isGeneratingAngle}
-            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-black font-medium rounded-full text-sm transition-colors"
+            className="px-6 py-2.5 bg-transparent border border-[#00ffa6] hover:bg-[#00ffa6]/10 text-[#00ffa6] font-bold rounded-lg text-sm uppercase tracking-wider shadow-[0_0_15px_rgba(0,255,166,0.3)] transition-all flex-shrink-0"
           >
             {isGeneratingAngle ? 'Analyzing Trends...' : 'Define Daily Angle'}
           </button>
         </div>
 
         {currentAngle ? (
-          <div className="bg-zinc-800/50 p-4 rounded-xl border border-zinc-700">
-            <div className="text-xs text-emerald-400 font-mono mb-1">NARRATIVE ANGLE OF THE DAY</div>
-            <h3 className="text-2xl font-bold text-white mb-2">{currentAngle.angle}</h3>
-            <p className="text-zinc-300 text-sm mb-3">{currentAngle.description}</p>
+          <div className="bg-[#050505] p-5 rounded-xl border border-[#4b0021]">
+            <div className="text-xs text-[#d4af37] font-mono mb-2 uppercase tracking-widest flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#00ffa6] shadow-[0_0_5px_#00ffa6] animate-pulse"></span>
+              NARRATIVE ANGLE OF THE DAY
+            </div>
+            <h3 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-[#c0c0c0] mb-2">{currentAngle.angle}</h3>
+            <p className="text-zinc-400 text-sm mb-4 leading-relaxed">{currentAngle.description}</p>
             <div className="flex flex-wrap gap-2">
               {currentAngle.keywords.map(kw => (
-                <span key={kw} className="text-xs bg-zinc-700 text-zinc-300 px-2 py-1 rounded-md">#{kw}</span>
+                <span key={kw} className="text-xs bg-[#1a1a24] border border-[#d4af37]/30 text-[#d4af37] px-3 py-1.5 rounded-lg tracking-wide uppercase">#{kw}</span>
               ))}
             </div>
           </div>
         ) : (
-          <div className="bg-zinc-800/30 p-6 rounded-xl border border-zinc-700 border-dashed text-center">
-            <p className="text-zinc-500 text-sm">No narrative angle defined for today. Generate one to start creating aligned assets.</p>
+          <div className="bg-[#050505] p-6 rounded-xl border border-zinc-800 border-dashed text-center">
+            <p className="text-zinc-600 text-sm tracking-wide">No narrative angle defined for today. Generate one to initialize the strategy matrix.</p>
           </div>
         )}
       </div>
 
       {/* Vault Section */}
       <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-zinc-900">📦 Content Vault</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-black text-white uppercase tracking-wider">📦 Genesis Vault</h2>
           <button 
             onClick={handleMockGenerateAsset}
-            className="px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-medium rounded-full text-sm transition-colors"
+            className="px-6 py-2.5 bg-transparent border border-[#d4af37] hover:bg-[#d4af37]/10 text-[#d4af37] font-bold rounded-lg text-sm uppercase tracking-wider shadow-[0_0_15px_rgba(212,175,55,0.2)] transition-all"
           >
-            + Generate Mock Asset
+            + Generate Asset
           </button>
         </div>
 
         <div className="grid gap-4">
           {assets.length === 0 ? (
-            <div className="bg-zinc-50 p-8 rounded-2xl border border-zinc-200 text-center">
-              <p className="text-zinc-500">The vault is empty. Generate assets aligned with today's narrative.</p>
+            <div className="bg-[#0a0a0c] p-8 rounded-2xl border border-zinc-900 text-center shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
+              <p className="text-zinc-600 tracking-wide uppercase text-sm">The vault is empty. Generate assets aligned with today's master narrative.</p>
             </div>
           ) : (
             assets.map(asset => (
-              <div key={asset.id} className="bg-white p-4 rounded-xl border border-zinc-200 flex items-center justify-between shadow-sm">
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs
-                    ${asset.type === 'video' ? 'bg-blue-100 text-blue-700' : 
-                      asset.type === 'image' ? 'bg-purple-100 text-purple-700' : 
-                      'bg-amber-100 text-amber-700'}`}
+              <div key={asset.id} className="group bg-[#0a0a0c] p-5 rounded-xl border border-[#2a2a35] hover:border-[#4b0021] flex items-center justify-between transition-all hover:shadow-[0_0_25px_rgba(75,0,33,0.3)]">
+                <div className="flex items-center gap-5">
+                  <div className={`w-12 h-12 rounded-lg flex items-center justify-center font-black text-xs border
+                    ${asset.type === 'video' ? 'bg-[#050505] border-[#00ffa6] text-[#00ffa6] shadow-[0_0_10px_rgba(0,255,166,0.2)]' : 
+                      asset.type === 'image' ? 'bg-[#050505] border-[#d4af37] text-[#d4af37] shadow-[0_0_10px_rgba(212,175,55,0.2)]' : 
+                      'bg-[#050505] border-white text-white shadow-[0_0_10px_rgba(255,255,255,0.2)]'}`}
                   >
                     {asset.type.substring(0, 3).toUpperCase()}
                   </div>
                   <div>
-                    <h4 className="font-semibold text-zinc-900">{asset.title}</h4>
-                    <div className="flex items-center gap-2 text-xs mt-1">
-                      <span className="text-zinc-500">Angle: <span className="font-medium text-zinc-700">{asset.narrativeAngle}</span></span>
-                      <span className="text-zinc-300">•</span>
-                      <span className="text-zinc-500">Score: <span className="font-medium text-zinc-700">{asset.priorityScore}</span></span>
+                    <h4 className="font-bold text-white tracking-wide group-hover:text-[#d4af37] transition-colors">{asset.title}</h4>
+                    <div className="flex items-center gap-3 text-xs mt-1.5 font-mono">
+                      <span className="text-zinc-500">Angle: <span className="font-bold text-[#c0c0c0]">{asset.narrativeAngle}</span></span>
+                      <span className="text-zinc-700">|</span>
+                      <span className="text-zinc-500">Score: <span className="font-bold text-[#00ffa6] drop-shadow-[0_0_3px_#00ffa6]">{asset.priorityScore}</span></span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-6">
                   {asset.status === 'scheduled' && asset.scheduledFor && (
                     <div className="flex gap-2">
                       {asset.scheduledFor.map((schedule, idx) => (
-                        <div key={idx} className="text-xs bg-zinc-100 px-2 py-1 rounded-md flex flex-col items-center">
-                          <span className="font-medium text-zinc-700">{schedule.platform}</span>
-                          <span className="text-zinc-500">{new Date(schedule.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        <div key={idx} className="text-[10px] uppercase bg-[#1a1a24] border border-[#2a2a35] px-3 py-1.5 rounded flex flex-col items-center">
+                          <span className="font-bold text-[#c0c0c0]">{schedule.platform}</span>
+                          <span className="text-[#00ffa6]">{new Date(schedule.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                         </div>
                       ))}
                     </div>
                   )}
                   
                   <div className="flex flex-col items-end gap-2">
-                    <span className={`px-3 py-1 text-xs font-medium rounded-full
-                      ${asset.status === 'vaulted' ? 'bg-zinc-100 text-zinc-600' : 
-                        asset.status === 'scheduled' ? 'bg-emerald-100 text-emerald-700' : 
-                        'bg-blue-100 text-blue-700'}`}
+                    <span className={`px-3 py-1 text-[10px] font-black rounded uppercase tracking-widest border
+                      ${asset.status === 'vaulted' ? 'bg-[#1a1a24] border-zinc-700 text-zinc-400' : 
+                        asset.status === 'scheduled' ? 'bg-[#4b0021] border-[#d4af37]/30 text-[#d4af37]' : 
+                        'bg-[#050505] border-[#00ffa6] text-[#00ffa6]'}`}
                     >
-                      {asset.status.toUpperCase()}
+                      {asset.status}
                     </span>
                     {asset.status === 'scheduled' && (
                       <button 
                         onClick={() => handlePublish(asset.id)}
-                        className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                        className="text-[10px] uppercase tracking-wider text-[#00ffa6] hover:text-white font-bold transition-colors drop-shadow-[0_0_5px_#00ffa6]"
                       >
                         Publish Now
                       </button>
